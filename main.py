@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import csv
+import uvicorn
 from datetime import datetime
 from fastapi import FastAPI, Request
 
@@ -60,25 +61,42 @@ class Pool:
 	def _get_num_days(self):
 		return len(set(datetime(p.date.year, p.date.month, p.date.day).date() for p in self.products))
 
+	def _get_num_months(self):
+		return len(set(datetime(p.date.year, p.date.month, 1).date() for p in self.products))
+
+
 	def _add_stats(self, data):
-		d = {}
-		for area, codes in data.items():
-			d[area] = {"kpi": len(codes), "average_kpi": len(codes) / self._get_num_days(), "codes": codes}
-		return d
+		return {
+			area: {
+				"kpi": len(codes),
+				"daily_average_kpi": len(codes) / self._get_num_days(),
+				"product_codes": codes
+			}
+			for area, codes in data.items()
+		}
 
 	def kpi(self):
 		d = {}
 
 		for p in self.products:
-			if p.area not in d:
-				d[p.area] = {}
-
-			if p.product_code not in d[p.area]:
-				d[p.area][p.product_code] = 1
-			else:
-				d[p.area][p.product_code] += 1
-
+			# Set d[p.area] to an empty dictionary and d[p.area][p.product_code] to 0 if there's no value.
+			d.setdefault(p.area, {}).setdefault(p.product_code, 0)
+			d[p.area][p.product_code] += 1
 		return self._add_stats(d)
+
+	def year_avg_kpi(self):
+		d = {}
+		months = 0
+		merge_and_sum = lambda d1, d2: {k: d1.get(k, 0) + d2.get(k, 0) for k in set(d1) | set(d2)}
+
+		for m in range(1, 13):
+			for area, data in self.month(m).kpi().items():
+				a = d.setdefault(area, {})
+				a["kpi"] = a.get("kpi", 0) + data["daily_average_kpi"]
+				a["product_codes"] = merge_and_sum(a.get("product_codes", {}), data["product_codes"])
+				months += 1
+
+		return {area: {"kpi": d[area]["kpi"]/months, "product_codes": d[area]["product_codes"]} for area in d}
 
 class QueryException(Exception):
 	def __init__(self, msg):
@@ -134,30 +152,44 @@ data = Pool.load_csv("data.csv")
 def data_endpoint(req: Request):
 	try:
 		day, month, year = parse_date_queries(req.query_params)
+		return ok(data.year(year).month(month).day(day).products)
 	except Exception as e:
 		return error(e)
-	return ok(data.year(year).month(month).day(day).products)
 
 @app.get("/range")
-def data_endpoint(req: Request):
+def range_endpoint(req: Request):
 	try:
 		start, end = parse_range_queries(req.query_params)
+		return ok(data.range(start, end).products)
 	except Exception as e:
 		return error(e)
-	return ok(data.range(start, end).products)
 
 @app.get("/kpi")
 def kpi_endpoint(req: Request):
 	try:
 		day, month, year = parse_date_queries(req.query_params)
+		return ok(data.year(year).month(month).day(day).kpi())
 	except Exception as e:
 		return error(e)
-	return ok(data.year(year).month(month).day(day).kpi())
+
+@app.get("/kpi/year")
+def default_year_kpi_endpoint():
+	return year_kpi_endpoint()
+
+@app.get("/kpi/year/{year}")
+def year_kpi_endpoint(year=datetime.today().year):
+	try:
+		return ok(data.year(int(year)).year_avg_kpi())
+	except Exception as e:
+		return error(e)
 
 @app.get("/kpi/range")
 def kpi_range_endpoint(req: Request):
 	try:
 		start, end = parse_range_queries(req.query_params)
+		return ok(data.range(start, end).kpi())
 	except Exception as e:
 		return error(e)
-	return ok(data.range(start, end).kpi())
+
+if __name__ == "__main__":
+	uvicorn.run(app, host="localhost", port=8080)
