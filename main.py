@@ -103,18 +103,11 @@ class QueryException(Exception):
 		super().__init__(msg)
 
 def is_date_valid(day, month, year):
-	if not day:
-		day = 1
-	if not month:
-		month = 1
-	if not year:
-		year = datetime.today().year
-
 	try:
-		datetime(year, month, day)
+		datetime(year or datetime.today().year, month or 1, day or 1)
+		return True
 	except ValueError:
 		return False
-	return True
 
 def parse_date_queries(query_params):
 	int_or_none = lambda i: int(i) if i else None
