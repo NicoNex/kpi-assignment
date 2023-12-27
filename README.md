@@ -41,9 +41,23 @@ The date parameters *must* be in the format *YYYY-MM-DD*.
 - `end`: the ending date of the range
 
 ### /kpi
+This endpoint shows the KPI for each area and the number of products produced for each product code.
+This endpoint accepts the following query parameters of integer type:
+- `day` to filter the dataset by day
+- `month` to filter the dataset by month
+- `year` to filter the dataset by year
 
 ### /kpi/range
+This endpoint shows the KPI for each area and the number of products produced for each product code in the given range of dates.
+It looks for 2 query parameters of string type representing the start date and the end date.
+The date parameters *must* be in the format *YYYY-MM-DD*.
+- `start`: the starting date of the range
+- `end`: the ending date of the range
 
 ### /kpi/year/{year}
+This endpoint shows the average KPI for each area and the number of products produced for each product code in the given year.
+The key difference from the KPI endpoint is that this KPI value is obtained from the average of monthly KPI values.
+It expects an integer path parameter corresponding to the year.
 
 ### /kpi/year
+This endpoint is the same as the one above except that it evaluates for the current year by default.
