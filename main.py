@@ -138,8 +138,8 @@ def ok(data):
 def error(err):
 	return {"ok": False, "error": str(err)}
 
+data = None
 app = FastAPI()
-data = Pool.load_csv("data.csv")
 
 @app.get("/")
 def data_endpoint(req: Request):
@@ -185,4 +185,5 @@ def kpi_range_endpoint(req: Request):
 		return error(e)
 
 if __name__ == "__main__":
+	data = Pool.load_csv("data.csv")
 	uvicorn.run(app, host="localhost", port=8080)
