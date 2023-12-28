@@ -28,7 +28,7 @@ The layout of the response is the following:
 {
 	"ok": true,
 	"data": {
-		
+		...
 	}
 }
 ```
@@ -60,4 +60,13 @@ The key difference from the KPI endpoint is that this KPI value is obtained from
 It expects an integer path parameter corresponding to the year.
 
 ### /kpi/year
-This endpoint is the same as the one above except that it evaluates for the current year by default.
+This endpoint is the same as the one above except that it evaluates for the current year.
+
+### /kpi/year/plot/{area}/{year}
+This endpoint returns a bars plot as a PNG image that shows the average KPI for each month.
+It expects two path parameters:
+- `area` - a case insensitive string representing the destination market of the products
+- `year` - an integer representing the year of interest
+
+### /kpi/year/plot/{area}
+This endpoint is the same as the one above excepts that it evaluates for the current year.
