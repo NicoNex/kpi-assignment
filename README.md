@@ -1,4 +1,4 @@
-[![codebeat badge](https://codebeat.co/badges/5d5444c1-40a6-4040-a5c2-f1d1847ec92e)](https://codebeat.co/projects/github-com-niconex-kpi-assignment-master)
+[![DeepSource](https://app.deepsource.com/gh/NicoNex/kpi-assignment.svg/?label=resolved+issues&show_trend=true&token=Jw4qv5Q_CmgK14F8VUTFO0Af)](https://app.deepsource.com/gh/NicoNex/kpi-assignment/)
 
 # kpi-assignment
 
