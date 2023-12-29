@@ -16,7 +16,7 @@ def is_date_valid(day, month, year) -> bool:
 	except ValueError:
 		return False
 
-def parse_date_queries(query_params: Request.query_params) -> tuple:
+def parse_date_queries(query_params) -> tuple:
 	int_or_none = lambda i: int(i) if i else None
 
 	try:
@@ -98,4 +98,3 @@ def kpi_range_endpoint(req: Request):
 		return ok(data.range(start, end).kpi())
 	except Exception as e:
 		return error(e)
-

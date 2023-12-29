@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-import endpoints
 import uvicorn
+from endpoints import app
 
 if __name__ == "__main__":
-	uvicorn.run(endpoints.app, host="localhost", port=8080)
+	uvicorn.run(app, host="localhost", port=8080)
