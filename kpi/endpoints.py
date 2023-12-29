@@ -9,6 +9,7 @@ class QueryException(Exception):
 
 
 app = Flask("KPI")
+app.url_map.strict_slashes = False
 data = Pool.load_csv("data.csv")
 
 
