@@ -111,9 +111,3 @@ class KPITest(unittest.TestCase):
 		self.assertEqual(products.month(9).day(1).kpi()["test_area_1"]["kpi"], 9)
 		self.assertEqual(products.month(3).kpi()["test_area_1"]["kpi"], 3)
 		self.assertEqual(products.range(datetime(2023, 1, 1), datetime(2023, 3, 1)).kpi()["test_area_1"]["kpi"], 3)
-
-
-if __name__ == "__main__":
-	test_kpi()
-	test_year_kpi()
-	test_filters()
