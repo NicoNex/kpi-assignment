@@ -46,8 +46,8 @@ def parse_range_queries(query_params) -> tuple:
 	return (start, end)
 
 
-def ok(data) -> dict:
-	return jsonify({"ok": True, "data": data})
+def ok(d) -> dict:
+	return jsonify({"ok": True, "data": d})
 
 
 def error(err: Exception) -> dict:
