@@ -1,12 +1,12 @@
 from pool import Pool
 from datetime import datetime
-from fastapi import FastAPI, Request, Response
+from flask import Flask, request, jsonify, send_file
 
 class QueryException(Exception):
 	def __init__(self, msg):
 		super().__init__(msg)
 
-app = FastAPI()
+app = Flask("KPI")
 data = Pool.load_csv("data.csv")
 
 def is_date_valid(day, month, year) -> bool:
@@ -40,61 +40,64 @@ def parse_range_queries(query_params) -> tuple:
 	return (start, end)
 
 def ok(data) -> dict:
-	return {"ok": True, "data": data}
+	return jsonify({"ok": True, "data": data})
 
 def error(err: Exception) -> dict:
-	return {"ok": False, "error": str(err)}
+	return jsonify({"ok": False, "error": str(err)})
 
-@app.get("/")
-def data_endpoint(req: Request):
+def flaskify(products):
+	return [p.to_dict() for p in products]
+
+@app.route("/")
+def data_endpoint():
 	try:
-		day, month, year = parse_date_queries(req.query_params)
-		return ok(data.year(year).month(month).day(day).products)
+		day, month, year = parse_date_queries(request.args)
+		return ok(flaskify(data.year(year).month(month).day(day).products))
 	except Exception as e:
 		return error(e)
 
-@app.get("/range")
-def range_endpoint(req: Request):
+@app.route("/range")
+def range_endpoint():
 	try:
-		start, end = parse_range_queries(req.query_params)
-		return ok(data.range(start, end).products)
+		start, end = parse_range_queries(request.args)
+		return ok(flaskify(data.range(start, end).products))
 	except Exception as e:
 		return error(e)
 
-@app.get("/kpi")
-def kpi_endpoint(req: Request):
+@app.route("/kpi")
+def kpi_endpoint():
 	try:
-		day, month, year = parse_date_queries(req.query_params)
+		day, month, year = parse_date_queries(request.args)
 		return ok(data.year(year).month(month).day(day).kpi())
 	except Exception as e:
 		return error(e)
 
-@app.get("/kpi/year")
+@app.route("/kpi/year")
 def default_year_kpi_endpoint():
 	return year_kpi_endpoint()
 
-@app.get("/kpi/year/{year}")
+@app.route("/kpi/year/<year>")
 def year_kpi_endpoint(year=datetime.today().year):
 	try:
 		return ok(data.year(int(year)).year_avg_kpi(int(year)))
 	except Exception as e:
 		return error(e)
 
-@app.get("/kpi/year/plot/{area}")
+@app.route("/kpi/year/plot/<area>")
 def default_year_kpi_plot(area=""):
 	return year_kpi_plot(area)
 
-@app.get("/kpi/year/plot/{area}/{year}")
+@app.route("/kpi/year/plot/<area>/<year>")
 def year_kpi_plot(area="", year=datetime.today().year):
 	try:
-		return Response(content=data.year(int(year)).year_plot(area.upper()), media_type="image/png")
+		return send_file(data.year(int(year)).year_plot(area.upper()), mimetype="image/png")
 	except Exception as e:
 		return error(e)
 
-@app.get("/kpi/range")
-def kpi_range_endpoint(req: Request):
+@app.route("/kpi/range")
+def kpi_range_endpoint():
 	try:
-		start, end = parse_range_queries(req.query_params)
+		start, end = parse_range_queries(request.args)
 		return ok(data.range(start, end).kpi())
 	except Exception as e:
 		return error(e)

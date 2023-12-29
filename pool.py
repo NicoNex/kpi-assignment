@@ -3,7 +3,7 @@ import csv
 from datetime import datetime
 import matplotlib.pyplot as plt
 
-class Product:
+class Product():
 	"""Product holds all the values related to each product in the data set."""
 	def __init__(self, factory: str, area: str, date: str, product_code: str):
 		self.factory = factory
@@ -13,6 +13,14 @@ class Product:
 
 	def __str__(self):
 		return f"{{{self.factory}, {self.area}, {self.date.strftime(r'%Y-%m-%d %H:%M:%S.%f')}, {self.product_code}}}"
+
+	def to_dict(self):
+		return {
+			"factory": self.factory,
+			"area": self.area,
+			"date": self.date.strftime(r'%Y-%m-%d %H:%M:%S.%f'),
+			"product_code": self.product_code
+		}
 
 class Pool:
 	"""Pool manages the data pool exporting all methods useful for the data manipulation."""
@@ -133,4 +141,4 @@ class Pool:
 		buf = io.BytesIO()
 		fig.savefig(buf, format="png")
 		buf.seek(0)
-		return buf.getvalue()
+		return buf
