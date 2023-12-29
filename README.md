@@ -72,3 +72,14 @@ It expects two path parameters:
 
 ### /kpi/year/plot/{area}
 This endpoint is the same as the one above excepts that it evaluates for the current year.
+
+## Running
+Run it with:
+```bash
+python kpi/main.py
+```
+
+Test it with:
+```bash
+python -m unittest tests/test.py
+```
