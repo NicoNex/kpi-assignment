@@ -4,6 +4,7 @@ import unittest
 from kpi.pool import Pool, Product
 from datetime import datetime
 
+
 products = Pool([
 	Product("test", "test_area_1", "2023-01-01 00:00:00.000", "1"),
 
@@ -95,6 +96,7 @@ products = Pool([
 	Product("test", "test_area_1", "2023-12-01 00:00:00.000", "11"),
 	Product("test", "test_area_1", "2023-12-01 00:00:00.000", "12")
 ])
+
 
 class KPITest(unittest.TestCase):
 	def test_kpi(self):

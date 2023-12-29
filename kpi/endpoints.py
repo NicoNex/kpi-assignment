@@ -2,12 +2,15 @@ from pool import Pool
 from datetime import datetime
 from flask import Flask, request, jsonify, send_file
 
+
 class QueryException(Exception):
 	def __init__(self, msg):
 		super().__init__(msg)
 
+
 app = Flask("KPI")
 data = Pool.load_csv("data.csv")
+
 
 def is_date_valid(day, month, year) -> bool:
 	try:
@@ -15,6 +18,7 @@ def is_date_valid(day, month, year) -> bool:
 		return True
 	except ValueError:
 		return False
+
 
 def parse_date_queries(query_params) -> tuple:
 	int_or_none = lambda i: int(i) if i else None
@@ -31,6 +35,7 @@ def parse_date_queries(query_params) -> tuple:
 
 	return (day, month, year)
 
+
 def parse_range_queries(query_params) -> tuple:
 	try:
 		start = datetime.strptime(query_params.get("start", None), r"%Y-%m-%d")
@@ -39,14 +44,18 @@ def parse_range_queries(query_params) -> tuple:
 		raise QueryException("invalid range, date must respect the format YYYY-MM-DD")
 	return (start, end)
 
+
 def ok(data) -> dict:
 	return jsonify({"ok": True, "data": data})
+
 
 def error(err: Exception) -> dict:
 	return jsonify({"ok": False, "error": str(err)})
 
+
 def flaskify(products):
 	return [p.to_dict() for p in products]
+
 
 @app.route("/")
 def data_endpoint():
@@ -56,6 +65,7 @@ def data_endpoint():
 	except Exception as e:
 		return error(e)
 
+
 @app.route("/range")
 def range_endpoint():
 	try:
@@ -63,6 +73,7 @@ def range_endpoint():
 		return ok(flaskify(data.range(start, end).products))
 	except Exception as e:
 		return error(e)
+
 
 @app.route("/kpi")
 def kpi_endpoint():
@@ -72,9 +83,11 @@ def kpi_endpoint():
 	except Exception as e:
 		return error(e)
 
+
 @app.route("/kpi/year")
 def default_year_kpi_endpoint():
 	return year_kpi_endpoint()
+
 
 @app.route("/kpi/year/<year>")
 def year_kpi_endpoint(year=datetime.today().year):
@@ -83,9 +96,11 @@ def year_kpi_endpoint(year=datetime.today().year):
 	except Exception as e:
 		return error(e)
 
+
 @app.route("/kpi/year/plot/<area>")
 def default_year_kpi_plot(area=""):
 	return year_kpi_plot(area)
+
 
 @app.route("/kpi/year/plot/<area>/<year>")
 def year_kpi_plot(area="", year=datetime.today().year):
@@ -93,6 +108,7 @@ def year_kpi_plot(area="", year=datetime.today().year):
 		return send_file(data.year(int(year)).year_plot(area.upper()), mimetype="image/png")
 	except Exception as e:
 		return error(e)
+
 
 @app.route("/kpi/range")
 def kpi_range_endpoint():
