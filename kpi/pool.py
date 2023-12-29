@@ -125,7 +125,7 @@ class Pool:
 		tmp = self.area(area)
 
 		for m in range(1, 13):
-			for a, d in tmp.month(m).kpi().items():
+			for _, d in tmp.month(m).kpi().items():
 				vals[m] = d["daily_average_kpi"]
 
 		# Create two tuples x and y with respectively the months in the x and the average KPIs in the y.
