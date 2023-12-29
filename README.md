@@ -1,3 +1,5 @@
+[![codebeat badge](https://codebeat.co/badges/5d5444c1-40a6-4040-a5c2-f1d1847ec92e)](https://codebeat.co/projects/github-com-niconex-kpi-assignment-master)
+
 # kpi-assignment
 
 All endpoints return the following empty json when no data is available, this is to differenciate between an eventual 0 KPI and the lack of data in the dataset.
